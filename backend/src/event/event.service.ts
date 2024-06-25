@@ -34,6 +34,16 @@ export class EventService {
     });
   }
 
+  findUnique(params: {
+    where: Prisma.EventWhereInput;
+  }) {
+    const { where } = params;
+
+    return this.prisma.event.findFirst({
+      where
+    });
+  }
+
   update(id: string, updateEventDto: UpdateEventDto) {
     return this.prisma.event.update({
       where: { id },
