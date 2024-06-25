@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLocalDto } from './dto/create-local.dto';
-import { UpdateLocalDto } from './dto/update-local.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
@@ -8,7 +6,7 @@ import { Prisma } from '@prisma/client';
 export class LocalService {
   constructor(private prisma: PrismaService) { }
 
-  create(createLocalDto: CreateLocalDto) {
+  create(createLocalDto: Prisma.LocalUncheckedCreateInput) {
     return this.prisma.local.create({
       data: createLocalDto,
     });
@@ -34,7 +32,7 @@ export class LocalService {
     });
   }
 
-  update(id: string, updateLocalDto: UpdateLocalDto) {
+  update(id: string, updateLocalDto: Prisma.LocalUncheckedUpdateInput) {
     return this.prisma.local.update({
       where: { id },
       data: updateLocalDto,

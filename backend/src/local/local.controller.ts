@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  HttpStatus,
+  HttpException,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { LocalService } from './local.service';
 import { CreateLocalDto } from './dto/create-local.dto';
 import { UpdateLocalDto } from './dto/update-local.dto';
@@ -9,7 +19,13 @@ export class LocalController {
 
   @Post()
   create(@Body() createLocalDto: CreateLocalDto) {
-    return this.localService.create(createLocalDto);
+    const { entries, turnstiles } = createLocalDto;
+
+    return this.localService.create({
+      ...createLocalDto,
+      entries: JSON.stringify(entries),
+      turnstiles: JSON.stringify(turnstiles),
+    });
   }
 
   @Get()
@@ -24,7 +40,27 @@ export class LocalController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateLocalDto: UpdateLocalDto) {
-    return this.localService.update(id, updateLocalDto);
+    const { entries, turnstiles, ...data } = updateLocalDto;
+
+    let updateData = {};
+
+    if (entries) {
+      updateData = {
+        entries: JSON.stringify(entries),
+      };
+    }
+
+    if (turnstiles) {
+      updateData = {
+        ...updateData,
+        turnstiles: JSON.stringify(turnstiles),
+      };
+    }
+
+    return this.localService.update(id, {
+      ...data,
+      ...updateData,
+    });
   }
 
   @Delete(':id')

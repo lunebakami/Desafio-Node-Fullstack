@@ -1,4 +1,13 @@
-import { IsString, IsOptional, IsEmail, Length, IsNotEmpty, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEmail,
+  Length,
+  IsNotEmpty,
+  IsInt,
+  IsArray,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 export class CreateLocalDto {
   @IsString()
@@ -43,16 +52,17 @@ export class CreateLocalDto {
   @IsNotEmpty()
   phone: string;
 
-  @IsString()
-  @IsNotEmpty()
-  entries: string;
-
-  @IsString()
-  @IsNotEmpty()
-  turnstiles: string;
-
   @IsInt()
   @IsNotEmpty()
   localTypeId: number;
-}
 
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  entries: string[];
+
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  turnstiles: string[];
+}
