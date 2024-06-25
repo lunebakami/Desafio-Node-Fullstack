@@ -8,11 +8,13 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 
 @ApiTags('events')
 @Controller('event')
@@ -24,7 +26,7 @@ export class EventController {
   @ApiResponse({
     status: 201,
     description: 'The created event.',
-    type: Event
+    type: Event,
   })
   async create(@Body() createEventDto: CreateEventDto) {
     const date = new Date(createEventDto.date);
@@ -68,8 +70,30 @@ export class EventController {
     description: 'All events.',
     type: [Event],
   })
-  findAll() {
-    return this.eventService.findAll({});
+  findAll(
+    @Query()
+    query: {
+      page?: number;
+      quantity?: number;
+      orderBy?: Prisma.EventOrderByWithRelationInput;
+    },
+  ) {
+    const { page, quantity, orderBy } = query;
+
+    // Page starts at 1
+    let pageInt = page ? parseInt(page.toString()) : 0;
+    pageInt = pageInt < 1 ? 1 : pageInt;
+
+    // Default quantity is 10
+    const quantityInt = quantity ? parseInt(quantity.toString()) : 10;
+
+    const skip = pageInt ? (pageInt - 1) * quantityInt : 0;
+
+    return this.eventService.findAll({
+      skip,
+      take: quantityInt,
+      orderBy,
+    });
   }
 
   @Get(':id')
@@ -109,7 +133,10 @@ export class EventController {
     if (updateEventDto.date && updateEventDto.localId) {
       const eventsInSameDateAndLocal = this.eventService.findUnique({
         where: {
-          AND: [{ localId: updateEventDto.localId }, { date: updateEventDto.date }],
+          AND: [
+            { localId: updateEventDto.localId },
+            { date: updateEventDto.date },
+          ],
         },
       });
 
@@ -124,7 +151,6 @@ export class EventController {
         );
       }
     }
-
 
     return this.eventService.update(id, updateEventDto);
   }

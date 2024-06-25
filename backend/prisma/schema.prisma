@@ -31,12 +31,12 @@ model Local {
   complement  String?
   email       String
   phone       String
-  localTypeId Int
+  localTypeId Int?
 
   entries    String
   turnstiles String
 
-  type  LocalType @relation(fields: [localTypeId], references: [id])
+  type  LocalType? @relation(fields: [localTypeId], references: [id], onDelete: SetNull)
   Event Event[]
 }
 
@@ -51,11 +51,11 @@ model Event {
   id          String   @id @default(uuid())
   name        String
   date        DateTime
-  localId     String
-  eventTypeId Int
+  localId     String?
+  eventTypeId Int?
   email       String
   phone       String
 
-  local     Local     @relation(fields: [localId], references: [id])
-  eventType EventType @relation(fields: [eventTypeId], references: [id])
+  local     Local?     @relation(fields: [localId], references: [id], onDelete: SetNull)
+  eventType EventType? @relation(fields: [eventTypeId], references: [id], onDelete: SetNull)
 }

@@ -29,6 +29,9 @@ export class LocalService {
   findOne(id: string) {
     return this.prisma.local.findUnique({
       where: { id },
+      include: {
+        type: true
+      }
     });
   }
 

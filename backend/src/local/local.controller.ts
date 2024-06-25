@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { LocalService } from './local.service';
 import { CreateLocalDto } from './dto/create-local.dto';
 import { UpdateLocalDto } from './dto/update-local.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Local } from './entities/local.entity';
+import { Prisma } from '@prisma/client';
 
 @ApiTags('local')
 @Controller('local')
@@ -42,8 +44,30 @@ export class LocalController {
     description: 'All locals.',
     type: [Local],
   })
-  findAll() {
-    return this.localService.findAll({});
+  findAll(
+    @Query()
+    query: {
+      page?: number;
+      quantity?: number;
+      orderBy?: Prisma.LocalOrderByWithRelationInput;
+    },
+  ) {
+    const { page, quantity, orderBy } = query;
+
+    // Page starts at 1
+    let pageInt = page ? parseInt(page.toString()) : 0;
+    pageInt = pageInt < 1 ? 1 : pageInt;
+
+    // Default quantity is 10
+    const quantityInt = quantity ? parseInt(quantity.toString()) : 10;
+
+    const skip = pageInt ? (pageInt - 1) * quantityInt : 0;
+
+    return this.localService.findAll({
+      skip,
+      take: quantityInt,
+      orderBy,
+    });
   }
 
   @Get(':id')
