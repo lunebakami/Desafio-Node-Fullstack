@@ -14,7 +14,7 @@ export class EventTypeController {
 
   @Get()
   findAll() {
-    return this.eventTypeService.findAll();
+    return this.eventTypeService.findAll({});
   }
 
   @Get(':id')
