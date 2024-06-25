@@ -12,12 +12,20 @@ import {
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('events')
 @Controller('event')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create event' })
+  @ApiResponse({
+    status: 201,
+    description: 'The created event.',
+    type: Event
+  })
   async create(@Body() createEventDto: CreateEventDto) {
     const date = new Date(createEventDto.date);
 
@@ -54,16 +62,34 @@ export class EventController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all events' })
+  @ApiResponse({
+    status: 200,
+    description: 'All events.',
+    type: [Event],
+  })
   findAll() {
     return this.eventService.findAll({});
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get event by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The event.',
+    type: Event,
+  })
   findOne(@Param('id') id: string) {
     return this.eventService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update event by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The updated event.',
+    type: Event,
+  })
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
     if (updateEventDto.date) {
       const date = new Date(updateEventDto.date);
@@ -104,6 +130,12 @@ export class EventController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete event by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The deleted event.',
+    type: Event,
+  })
   remove(@Param('id') id: string) {
     return this.eventService.remove(id);
   }
