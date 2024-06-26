@@ -53,7 +53,7 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
         // Custom colors (some overlap with the above colors)
-        onPrimary: {
+        "on-primary": {
           DEFAULT: "#333B49",
           foreground: "#EBF0F9",
         },
@@ -61,7 +61,7 @@ const config = {
           DEFAULT: "#EBF0F9",
           foreground: "#333B49",
         },
-        onSecondary: {
+        "on-secondary": {
           DEFAULT: "#10141D",
           foreground: "#FFFFFF",
         },
@@ -69,19 +69,19 @@ const config = {
           DEFAULT: "#FFFFFF",
           foreground: "#10141D",
         },
-        onSupportBlue: {
+        "on-support-blue": {
           DEFAULT: "#CAD6EC",
           foreground: "#2669FF",
         },
-        greyBlue: {
+        "grey-blue": {
           DEFAULT: "#183362",
           foreground: "#FFFFFF",
         },
-        greyBlue2: {
+        "grey-blue-2": {
           DEFAULT: "#4E4F5B",
           foreground: "#FFFFFF",
         },
-        attentionBg: {
+        "attention-bg": {
           DEFAULT: "#2669FF",
           foreground: "#333B49",
         },
@@ -89,7 +89,7 @@ const config = {
           DEFAULT: "#999AA1",
           foreground: "#FFFFFF",
         },
-        lightGrey: {
+        "light-grey": {
           DEFAULT: "#BABBBF",
           foreground: "#FFFFFF",
         },
@@ -101,14 +101,38 @@ const config = {
           DEFAULT: "#10141D",
           foreground: "#EBF0F9",
         },
-        surface2: {
+        "surface-2": {
           DEFAULT: "#191E28",
           foreground: "#FFFFFF",
         },
         overlay: {
           DEFAULT: "#19141D 80%",
           foreground: "#FFFFFF",
-        }
+        },
+        success: {
+          DEFAULT: "#99C766",
+          foreground: "#F0FAF0",
+        },
+        "success-support": {
+          DEFAULT: "#2F3B28",
+          foreground: "#FFFFFF",
+        },
+        alert: {
+          DEFAULT: "#F79E1B",
+          foreground: "#10141D",
+        },
+        "alert-support": {
+          DEFAULT: "#61461F",
+          foreground: "#FFFFFF",
+        },
+        error: {
+          DEFAULT: "#F6285F",
+          foreground: "#F5F5F5",
+        },
+        "error-support": {
+          DEFAULT: "#461527",
+          foreground: "#F5F5F5",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -129,6 +153,9 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      width: {
+        'form-card': '37.5rem',
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
