@@ -24,7 +24,16 @@ export class EventService {
     return this.prisma.event.findMany({
       skip,
       take,
-      orderBy
+      orderBy: orderBy ? orderBy : { date: 'asc' },
+      include: {
+        eventType: true,
+        local: {
+          select: {
+            name: true,
+            entries: true,
+          }
+        }
+      }
     });
   }
 

@@ -54,6 +54,10 @@ export class LocalController {
   ) {
     const { page, quantity, orderBy } = query;
 
+    if (!page) {
+      return this.localService.findAll({});
+    }
+
     // Page starts at 1
     let pageInt = page ? parseInt(page.toString()) : 0;
     pageInt = pageInt < 1 ? 1 : pageInt;
