@@ -6,7 +6,7 @@ import Form from "./form";
 export default function AddLocal() {
 
   return (
-    <div className="h-full w-form-card m-auto">
+    <div className="w-form-card m-auto">
       <div className="mb-8 pt-9 m-auto"> breadcrumbs </div>
       <div className="mb-7 ">
         <div className="mb-6">

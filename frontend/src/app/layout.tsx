@@ -21,6 +21,7 @@ export default function RootLayout({
 
   const styles = {
     backgroundImage: `url(${imageUrl})`,
+    height: "100%",
   };
   return (
     <html lang="en">

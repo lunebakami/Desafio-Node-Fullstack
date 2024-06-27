@@ -39,7 +39,7 @@ export function DataTable<TData, TValue>({
   });
 
   const [page, setPage] = useState(1);
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState(7);
 
   const handlePagination = ({ page, quantity }: { page: number; quantity: number }) => {
     setPage(page);

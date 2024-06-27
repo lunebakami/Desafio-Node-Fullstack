@@ -1,14 +1,22 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-
-import Welcome from "@/components/welcome";
+import { Button } from "@/components/ui/button";
 import { Title02 } from "@/components/title";
+import Welcome from "@/components/welcome";
 
 import { MdFestival, MdLocalActivity } from "react-icons/md";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
-export default function Home() {
+import Link from "next/link";
+import { getLocals } from "@/lib/api/local";
+import { getEvents } from "@/lib/api/events";
+import { Local } from "./locals/columns";
+import { Event } from "./events/columns";
+import { format } from "date-fns";
+
+export default async function Home() {
+  const { data: locals } = await getLocals({ page: 1, quantity: 3 });
+  const { data: events } = await getEvents({ page: 1, quantity: 3 });
+
   return (
     <div className="mx-24 bg-cover bg-no-repeat bg-fixed bg-opacity-20">
       <Welcome />
@@ -29,7 +37,7 @@ export default function Home() {
                 variant="outline"
                 className="bg-on-support-blue text-secondary-foreground"
               >
-                <Link href="/locals">Conferir Locais</Link> 
+                <Link href="/locals">Conferir Locais</Link>
               </Button>
             </div>
           </CardContent>
@@ -62,28 +70,22 @@ export default function Home() {
         <div className="flex-col w-full justify-between px-6 py-8 bg-surface text-surface-foreground rounded-2xl">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-normal">Últimos locais adicionados</h2>
-            <span className="text-base font-normal">Ver todos</span>
+            <span className="text-base font-normal">
+              <Link href="/locals">
+                <Button variant="outline">Ver todos</Button>
+              </Link>
+            </span>
           </div>
           <Table className="striped mt-6">
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
+              {locals.map((local: Local) => (
+                <TableRow key={local.id}>
+                  <TableCell className="font-medium">{local.name}</TableCell>
+                  <TableCell>{local.address}</TableCell>
+                  <TableCell>{local.city}</TableCell>
+                  <TableCell className="text-right">{local.state}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
@@ -91,28 +93,23 @@ export default function Home() {
         <div className="flex-col w-full justify-between px-6 py-8 bg-surface text-surface-foreground rounded-2xl">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-normal">Últimos locais adicionados</h2>
-            <span className="text-base font-normal">Ver todos</span>
+            <span className="text-base font-normal">
+              <Link href="/events">
+                <Button variant="outline">Ver todos</Button>
+              </Link>
+            </span>
           </div>
           <Table className="striped mt-6">
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
+              {events.map((event: Event) => (
+                <TableRow key={event.id}>
+                  <TableCell className="font-medium">{event.name}</TableCell>
+                  <TableCell>{format(event.date, "dd/MM/yy")}</TableCell>
+                  <TableCell className="text-right">
+                    {event.local?.name || "Local não definido"}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>

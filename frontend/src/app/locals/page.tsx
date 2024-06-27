@@ -52,7 +52,7 @@ export default function Locals() {
   };
 
   return (
-    <div>
+    <div className="h-[88vh]">
       <div className="mb-7">
         <Title02>Locais</Title02>
         <span>Confira a lista de todos os locais cadastrados!</span>

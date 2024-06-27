@@ -4,7 +4,7 @@ export default function LocalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="bg-surface-2 text-surface-2-foreground px-28 h-full pb-10 2xl:h-[92vh]">
+    <section className="bg-surface-2 text-surface-2-foreground px-28 pb-10">
       {children}
     </section>
   );
