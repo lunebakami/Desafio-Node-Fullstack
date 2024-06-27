@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteLocal } from "@/lib/api/local";
 
 export type Local = {
   id: string;
@@ -29,65 +28,67 @@ export type Local = {
   turnstiles: string; // Assuming this is a property related to the local type
 };
 
-export const columns: ColumnDef<Local>[] = [
-  {
-    accessorKey: "name",
-    header: "Nome do Local",
-  },
-  {
-    accessorKey: "address",
-    header: "Endereço",
-  },
-  {
-    accessorKey: "city",
-    header: "Cidade e Estado",
-    cell: ({ row }) => {
-      const local = row.original;
-      const { city, state } = local;
-
-      return (
-        <div className="text-start font-medium">
-          {city}/{state}
-        </div>
-      );
+export const getColumns = (
+  handleDelete: (id: string) => void,
+): ColumnDef<Local>[] => {
+  const columns: ColumnDef<Local>[] = [
+    {
+      accessorKey: "name",
+      header: "Nome do Local",
     },
-  },
-  {
-    accessorKey: "entries",
-    header: "Portões cadastrados",
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const local = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => console.log("Edit", local.id)}>
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                deleteLocal(local.id).then((res) => {
-                  if (res.status === 200) {
-                    alert("Local deleted successfully");
-                  }
-                });
-              }}
-            >
-              Apagar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+    {
+      accessorKey: "address",
+      header: "Endereço",
     },
-  },
-];
+    {
+      accessorKey: "city",
+      header: "Cidade e Estado",
+      cell: ({ row }) => {
+        const local = row.original;
+        const { city, state } = local;
+
+        return (
+          <div className="text-start font-medium">
+            {city}/{state}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "entries",
+      header: "Portões cadastrados",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const local = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => console.log("Edit", local.id)}>
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  handleDelete(local.id);
+                }}
+              >
+                Apagar
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
+  return columns;
+};

@@ -24,6 +24,10 @@ export const getLocals = async ({ page = 1, quantity = 10 }:{ page?: number; qua
   return await api.get(`/local?page=${page}&quantity=${quantity}`);
 }
 
+export const getAllLocals = async () => {
+  return await api.get(`/local`);
+}
+
 export const deleteLocal = async (id: string) => {
   return await api.delete(`/local/${id}`);
 }
