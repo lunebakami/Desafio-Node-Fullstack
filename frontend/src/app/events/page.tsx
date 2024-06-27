@@ -8,9 +8,11 @@ import { getEvents } from "@/lib/api/events";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Events() {
   const [data, setData] = useState<Event[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     getEvents({}).then((res) => setData(res.data));
@@ -19,11 +21,21 @@ export default function Events() {
   const handleDelete = (id: string) => {
     deleteEvent(id).then((res) => {
       if (res.status === 200) {
-        alert("Event deleted successfully");
+          toast({
+            variant: "success",
+            title: "Sucesso",
+            description: "um evento foi deletado",
+          });
         setData((data) => {
           return data.filter((local) => local.id !== id);
         })
       }
+    }).catch((error) => {
+      toast({
+        variant: "error",
+        title: "Erro",
+        description: "Houve um erro ao deletar o evento",
+      });
     });
   };
 

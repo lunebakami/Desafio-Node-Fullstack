@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { deleteLocal } from "@/lib/api/local";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Locals() {
   const [data, setData] = useState<Local[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     getLocals({}).then((res) => setData(res.data));
@@ -27,14 +29,26 @@ export default function Locals() {
   };
 
   const handleDelete = (id: string) => {
-    deleteLocal(id).then((res) => {
-      if (res.status === 200) {
-        alert("Local deleted successfully");
-        setData((data) => {
-          return data.filter((local) => local.id !== id);
+    deleteLocal(id)
+      .then((res) => {
+        if (res.status === 200) {
+          toast({
+            variant: "success",
+            title: "Sucesso",
+            description: "um local foi deletado",
+          });
+          setData((data) => {
+            return data.filter((local) => local.id !== id);
+          });
+        }
+      })
+      .catch((error) => {
+        toast({
+          variant: "error",
+          title: "Erro",
+          description: "Houve um erro ao deletar o local",
         });
-      }
-    });
+      });
   };
 
   return (
@@ -53,7 +67,11 @@ export default function Locals() {
             <Link href="/locals/new">Adicionar Local</Link>
           </Button>
         </div>
-        <DataTable pagination={pagination} columns={getColumns(handleDelete)} data={data} />
+        <DataTable
+          pagination={pagination}
+          columns={getColumns(handleDelete)}
+          data={data}
+        />
       </div>
     </div>
   );

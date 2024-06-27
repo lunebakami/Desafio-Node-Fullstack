@@ -24,7 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { formSchema, defaultValues } from "./form-schemas";
 import { getEventTypes } from "@/lib/api/eventTypes";
 import { useEffect, useState } from "react";
-import { createLocal, getAllLocals } from "@/lib/api/local";
+import { getAllLocals } from "@/lib/api/local";
 import {
   Popover,
   PopoverContent,
@@ -34,6 +34,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createEvent } from "@/lib/api/events";
+import { useToast } from "@/components/ui/use-toast";
 
 type EventType = {
   id: number;
@@ -46,6 +47,7 @@ type Local = {
 };
 
 export default function AddEventForm() {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -66,7 +68,7 @@ export default function AddEventForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const { date, hour, ...data } = values;
-    const hourNumber = parseInt(hour.split(':')[0]); // Parse the hour as an integer
+    const hourNumber = parseInt(hour.split(":")[0]); // Parse the hour as an integer
     const minutes = parseInt(hour.split(":")[1]); // Extract and parse the minutes
 
     // Create a new date object with the combined date and time
@@ -86,11 +88,32 @@ export default function AddEventForm() {
       date: datetimeString,
     };
 
-    createEvent(payload).then((res) => {
-      if (res.status === 201) {
-        alert("Event created successfully!");
-      }
-    });
+    createEvent(payload)
+      .then((res) => {
+        if (res.status === 201) {
+          form.reset();
+          toast({
+            variant: "success",
+            title: "Sucesso",
+            description: "um novo evento foi adicionado",
+          });
+        }
+      })
+      .catch((error) => {
+        if (error?.response?.status === 400 && error.response.data?.message) {
+          return toast({
+            variant: "error",
+            title: "Erro",
+            description: error.response.data.message,
+          });
+        }
+
+        toast({
+          variant: "error",
+          title: "Erro",
+          description: "Ocorreu um erro ao adicionar um novo evento",
+        });
+      });
   }
 
   return (
@@ -184,9 +207,7 @@ export default function AddEventForm() {
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date()
-                          }
+                          disabled={(date) => date < new Date()}
                           initialFocus
                         />
                       </PopoverContent>

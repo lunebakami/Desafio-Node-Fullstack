@@ -25,6 +25,7 @@ import { getLocalTypes } from "@/lib/api/localTypes";
 import { getStates } from "@/lib/api/states";
 import { useEffect, useState } from "react";
 import { createLocal } from "@/lib/api/local";
+import { useToast } from "@/components/ui/use-toast";
 
 type LocalType = {
   id: number;
@@ -38,6 +39,7 @@ type State = {
 };
 
 export default function AddLocalForm() {
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -68,11 +70,32 @@ export default function AddLocalForm() {
       turnstiles: turnstilesArray,
     };
 
-    createLocal(payload).then((res) => {
-      if (res.status === 201) {
-        alert("Local criado com sucesso");
-      }
-    });
+    createLocal(payload)
+      .then((res) => {
+        if (res.status === 201) {
+          form.reset();
+          toast({
+            variant: "success",
+            title: "Sucesso",
+            description: "Local adicionado com sucesso",
+          });
+        }
+      })
+      .catch((error) => {
+        if (error?.response?.status === 400 && error.response.data?.message) {
+          return toast({
+            variant: "error",
+            title: "Erro",
+            description: error.response.data.message,
+          });
+        }
+
+        toast({
+          variant: "error",
+          title: "Erro",
+          description: "Ocorreu um erro ao adicionar um novo local",
+        });
+      });
   }
 
   return (
@@ -135,7 +158,10 @@ export default function AddLocalForm() {
                     </FormControl>
                     <SelectContent>
                       {localTypes.map((localType) => (
-                        <SelectItem key={localType.id} value={`${localType.id}`}>
+                        <SelectItem
+                          key={localType.id}
+                          value={`${localType.id}`}
+                        >
                           {localType.name}
                         </SelectItem>
                       ))}
@@ -191,7 +217,6 @@ export default function AddLocalForm() {
               control={form.control}
               name="state"
               render={({ field }) => (
-
                 <FormItem>
                   <FormLabel>Estado*</FormLabel>
                   <Select
@@ -213,7 +238,6 @@ export default function AddLocalForm() {
                   </Select>
                   <FormMessage />
                 </FormItem>
-
               )}
             />
           </div>
