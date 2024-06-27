@@ -2,57 +2,77 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import FormRow from "./form-row";
 import { Separator } from "@/components/ui/separator";
+import { formSchema, defaultValues } from "./form-schemas";
+import { getLocalTypes } from "@/lib/api/localTypes";
+import { getStates } from "@/lib/api/states";
+import { useEffect, useState } from "react";
+import { createLocal } from "@/lib/api/local";
 
-const formSchema = z.object({
-  name: z.string().nonempty(), // Name is required and must not be empty
-  nickname: z.string().optional(), // Nickname is optional
-  cnpj: z.string().length(14), // CNPJ must be 14 characters long
-  city: z.string().nonempty(), // City is required and must not be empty
-  state: z.string().length(2), // State must be 2 characters long
-  cep: z.string().length(8), // CEP must be 8 characters long
-  address: z.string().nonempty(), // Address is required and must not be empty
-  complement: z.string().optional(), // Complement is optional
-  email: z.string().email(), // Email must be a valid email address
-  phone: z.string().optional(), // Phone is optional
-  localTypeId: z.number().positive(), // Local type ID must be a positive number
-  entries: z.array(z.string()), // Entries is an array of strings
-  turnstiles: z.array(z.string()), // Turnstiles is an array of strings
-});
+type LocalType = {
+  id: number;
+  name: string;
+};
+
+type State = {
+  id: number;
+  nome: string;
+  sigla: string;
+};
 
 export default function AddLocalForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      nickname: "",
-      cnpj: "",
-      city: "",
-      state: "",
-      cep: "",
-      address: "",
-      complement: "",
-      email: "",
-      phone: "",
-      localTypeId: 0,
-      entries: [],
-      turnstiles: [],
-    },
+    defaultValues,
   });
 
+  const [localTypes, setLocalTypes] = useState<LocalType[]>([]);
+  const [states, setStates] = useState<State[]>([]);
+
+  useEffect(() => {
+    getLocalTypes().then((response) => {
+      setLocalTypes(response.data);
+    });
+
+    getStates().then((response) => {
+      setStates(response.data);
+    });
+  }, []);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const { entries, turnstiles, ...data } = values;
+
+    const entriesArray = entries.replaceAll(" ", "").split(",");
+    const turnstilesArray = turnstiles.replaceAll(" ", "").split(",");
+
+    const payload = {
+      ...data,
+      entries: entriesArray,
+      turnstiles: turnstilesArray,
+    };
+
+    createLocal(payload).then((res) => {
+      if (res.status === 201) {
+        alert("Local criado com sucesso");
+      }
+    });
   }
 
   return (
@@ -104,9 +124,23 @@ export default function AddLocalForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Selecione um tipo*</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Selecione um tipo" {...field} />
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={`${field.value}`}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a verified email to display" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {localTypes.map((localType) => (
+                        <SelectItem key={localType.id} value={`${localType.id}`}>
+                          {localType.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -157,13 +191,29 @@ export default function AddLocalForm() {
               control={form.control}
               name="state"
               render={({ field }) => (
+
                 <FormItem>
-                  <FormLabel>CNPJ*</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Selecione um estado" {...field} />
-                  </FormControl>
+                  <FormLabel>Estado*</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={`${field.value}`}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {states.map((state) => (
+                        <SelectItem key={state.id} value={`${state.id}`}>
+                          {state.nome}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
+
               )}
             />
           </div>
@@ -274,7 +324,7 @@ export default function AddLocalForm() {
                 <FormItem>
                   <FormLabel>Cadastre as entradas*</FormLabel>
                   <FormControl>
-                    <Input placeholder="Insira as entradas" {...field} />
+                    <Input placeholder="A,B,C,D" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -289,7 +339,7 @@ export default function AddLocalForm() {
                 <FormItem>
                   <FormLabel>Cadastre as catracas*</FormLabel>
                   <FormControl>
-                    <Input placeholder="Insira as catracas" {...field} />
+                    <Input placeholder="1,2,3,4..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

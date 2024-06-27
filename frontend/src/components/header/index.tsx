@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Header() {
@@ -14,9 +15,21 @@ export default function Header() {
       </div>
       <nav className="pl-36 w-full flex justify-start">
         <ul className="space-x-4 flex">
-          <li>Home</li>
-          <li>About</li>
-          <li>Contact</li>
+          <li>
+            <Link href="/">
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link href="/locals">
+              Locais
+            </Link>
+          </li>
+          <li>
+            <Link href="/events">
+              Eventos
+            </Link>
+          </li>
         </ul>
       </nav>
       <div>Account</div>

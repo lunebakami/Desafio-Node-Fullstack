@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteLocal } from "@/lib/api/local";
 
 export type Local = {
   id: string;
@@ -45,7 +46,7 @@ export const columns: ColumnDef<Local>[] = [
       const { city, state } = local;
 
       return (
-        <div className="text-right font-medium">
+        <div className="text-start font-medium">
           {city}/{state}
         </div>
       );
@@ -69,15 +70,21 @@ export const columns: ColumnDef<Local>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => console.log("Edit", local.id)}
-            >
+            <DropdownMenuItem onClick={() => console.log("Edit", local.id)}>
               Editar
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => console.log("Delete", local.id)}
-            >Apagar</DropdownMenuItem>
+              onClick={() => {
+                deleteLocal(local.id).then((res) => {
+                  if (res.status === 200) {
+                    alert("Local deleted successfully");
+                  }
+                });
+              }}
+            >
+              Apagar
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

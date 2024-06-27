@@ -3,7 +3,7 @@
 import { Title02 } from "@/components/title";
 import { columns, Local } from "./columns";
 import { DataTable } from "@/components/data-table";
-import { getData } from "./getData";
+import { getLocals } from "../../lib/api/local";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ export default function Locals() {
   const [data, setData] = useState<Local[]>([]);
 
   useEffect(() => {
-    getData({ page: 1, quantity: 2 }).then((fetchData) => setData(fetchData));
+    getLocals({}).then((res) => setData(res.data));
   }, []);
 
   const pagination = ({
@@ -22,12 +22,11 @@ export default function Locals() {
     page: number;
     quantity: number;
   }) => {
-    getData({ page, quantity }).then((fetchData) => setData(fetchData));
+    getLocals({ page, quantity }).then((res) => setData(res.data));
   };
 
   return (
     <div>
-      <div className="mb-8 pt-9 m-auto"> breadcrumbs </div>
       <div className="mb-7">
         <Title02>Locais</Title02>
         <span>Confira a lista de todos os locais cadastrados!</span>
